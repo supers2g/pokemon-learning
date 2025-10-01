@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Finn's Number Game</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Menu Screen -->
+  <div id="menu" class="screen">
+    <h1>🎮 Spelling Numbers Adventure</h1>
+    <div class="card">
+      <div class="small center">Help Finn learn numbers 1–200. Collect Pokémon, hatch eggs, beat Team Rocket!</div>
+    </div>
+    <div class="center">
+      <button id="playBtn">🚀 Play</button>
+      <button id="mapBtn" class="secondary">🗺️ Progress Map</button>
+      <button id="dexBtn" class="accent">📖 Pokédex</button>
+      <button id="analyticsBtn">📊 Analytics</button>
+    </div>
+  </div>
+
+  <!-- Game Screen -->
+  <div id="game" class="screen">
+    <div class="card">
+      <div class="small center">Difficulty: <strong id="difficultyLabel">Mixed</strong></div>
+    </div>
+    <div id="question" class="question">&nbsp;</div>
+    <div id="options" class="options"></div>
+    <div id="inputRow" style="display:none" class="center">
+      <input id="answerInput" type="text" placeholder="Type your answer" />
+      <button id="submitBtn">Submit</button>
+    </div>
+    <div id="encounterArea" class="center"></div>
+    <div id="feedback" class="small center"></div>
+    <div class="center"><button id="continueBtn" style="display:none">Continue</button></div>
+    <div id="collectionBar"></div>
+    <div id="eggsBar" class="center"></div>
+    <div id="achievementsList" class="small-muted center"></div>
+    <div class="center"><button id="quitBtn" class="danger">Quit to menu</button></div>
+  </div>
+
+  <!-- Map Screen -->
+  <div id="map" class="screen">
+    <h2>🗺️ Progress Map</h2>
+    <div class="card"><div id="mapGrid"></div></div>
+    <div class="center"><button id="backFromMap">Back</button></div>
+  </div>
+
+  <!-- Pokedex Screen -->
+  <div id="dex" class="screen">
+    <h2>📖 Your Pokédex</h2>
+    <div id="dexGrid"></div>
+    <div class="center"><button id="backFromDex">Back</button></div>
+  </div>
+
+  <!-- Analytics Screen -->
+  <div id="analytics" class="screen">
+    <h2>📊 Parent Analytics & Settings</h2>
+    <div class="card"><div id="analyticsContent"></div></div>
+    <div class="settings-row">
+      <label><input id="soundToggle" type="checkbox" checked /> 🔊 Play sounds & speech</label>
+      <button id="resetBtn" class="danger">🔄 Reset progress</button>
+    </div>
+    <div class="center"><button id="backFromAnalytics">Back</button></div>
+  </div>
+
+  <!-- Rocket Battle Screen -->
+  <div id="rocketBattle" class="screen">
+    <h2>🚀 Team Rocket Battle!</h2>
+    <div class="card">
+      <div id="rocketQuestion" class="question"></div>
+      <div id="rocketOptions" class="options"></div>
+      <div id="rocketFeedback" class="small center"></div>
+    </div>
+    <div class="center"><button id="forfeitRocket" class="danger">Give Up</button></div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
