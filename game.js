@@ -667,6 +667,7 @@ function addToCollection(id) {
 }
 
 function updateCollectionBar() {
+  collectionBar.innerHTML = '';
   state.collection.forEach(cid => {
     const c = creatures.find(x => x.id === cid);
     if (!c) return;
