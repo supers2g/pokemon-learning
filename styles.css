@@ -467,6 +467,7 @@ input[type="checkbox"] {
 }
 
 /* Letter tiles for spelling */
+/* Letter tiles for spelling */
 .tile-display {
   min-height: 50px;
   background: white;
@@ -478,6 +479,7 @@ input[type="checkbox"] {
   font-weight: 600;
   text-align: center;
   color: var(--text);
+  display: block; /* ADD THIS */
 }
 
 .tile-bank {
@@ -489,16 +491,17 @@ input[type="checkbox"] {
 }
 
 .letter-tile {
-  min-width: 45px;
-  min-height: 45px;
-  font-size: 1.2rem;
+  min-width: 40px;        /* CHANGED from 45px */
+  min-height: 40px;       /* CHANGED from 45px */
+  max-width: 45px;        /* ADD THIS */
+  max-height: 45px;       /* ADD THIS */
+  font-size: 1rem;        /* CHANGED from 1.2rem */
   font-weight: 700;
-  padding: 8px 12px;
+  padding: 8px;           /* CHANGED from 8px 12px */
   background: linear-gradient(135deg, #fff, #f3f4f6);
   border: 2px solid var(--primary);
   transition: var(--transition);
 }
-
 .letter-tile:hover:not(:disabled) {
   transform: translateY(-3px) scale(1.05);
   border-color: var(--secondary);
