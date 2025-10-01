@@ -185,6 +185,11 @@ function startGame() {
 }
 
 function quitToMenu() {
+  // Don't allow quitting during a question - they must answer it
+  if (state.lastQuestion !== null) {
+    showTempMessage('Please finish this question first!', 2000, 'hint');
+    return;
+  }
   save();
   showScreen('menu');
 }
@@ -362,12 +367,49 @@ function showPlaceValue(n) {
 
 function showPlaceValueReverse(n) {
   currentAnswer = `${Math.floor(n / 100)} ${Math.floor((n % 100) / 10)} ${n % 10}`;
-  qEl.textContent = `Write ${n} using place value. Type: hundreds tens ones`;
-  optEl.innerHTML = `<div class="small-muted">Example: 145 would be "1 4 5"</div>`;
+  qEl.textContent = `Write ${n} using place value:`;
+  optEl.innerHTML = `
+    <div class="place-value-inputs">
+      <div class="pv-group">
+        <label>Hundreds</label>
+        <input type="text" id="pvHundreds" maxlength="1" />
+      </div>
+      <div class="pv-group">
+        <label>Tens</label>
+        <input type="text" id="pvTens" maxlength="1" />
+      </div>
+      <div class="pv-group">
+        <label>Ones</label>
+        <input type="text" id="pvOnes" maxlength="1" />
+      </div>
+    </div>
+  `;
   speak(`Write ${n} using place value`);
-  inputRow.style.display = 'flex';
-  answerInput.placeholder = 'hundreds tens ones';
-  answerInput.focus();
+  
+  // Auto-focus and auto-advance between inputs
+  const h = document.getElementById('pvHundreds');
+  const t = document.getElementById('pvTens');
+  const o = document.getElementById('pvOnes');
+  h.focus();
+  h.oninput = () => { if (h.value) t.focus(); };
+  t.oninput = () => { if (t.value) o.focus(); };
+  o.onkeydown = (e) => { if (e.key === 'Enter') submitPlaceValue(); };
+  
+  const submitBtn = document.createElement('button');
+  submitBtn.textContent = 'Submit';
+  submitBtn.onclick = submitPlaceValue;
+  submitBtn.style.marginTop = '15px';
+  optEl.appendChild(submitBtn);
+}
+
+function submitPlaceValue() {
+  const h = document.getElementById('pvHundreds').value.trim();
+  const t = document.getElementById('pvTens').value.trim();
+  const o = document.getElementById('pvOnes').value.trim();
+  const answer = `${h} ${t} ${o}`;
+  
+  if (answer === currentAnswer) return handleCorrect();
+  else return handleWrong(currentAnswer);
 }
 
 function showPlaceValueDifferent(n) {
@@ -379,12 +421,41 @@ function showPlaceValueDifferent(n) {
   const altT = h * 10 + t;
   currentAnswer = `${altT} ${o}`;
   
-  qEl.textContent = `${n} = ${h} hundred, ${t} tens, ${o} ones. Write it using only tens and ones.`;
-  optEl.innerHTML = `<div class="small-muted">Type: tens ones (Example: "17 2" for 17 tens and 2 ones)</div>`;
+  qEl.textContent = `${n} = ${h} hundred, ${t} tens, ${o} ones. Write it using only tens and ones:`;
+  optEl.innerHTML = `
+    <div class="place-value-inputs">
+      <div class="pv-group">
+        <label>Tens</label>
+        <input type="text" id="pvTens2" maxlength="2" />
+      </div>
+      <div class="pv-group">
+        <label>Ones</label>
+        <input type="text" id="pvOnes2" maxlength="1" />
+      </div>
+    </div>
+  `;
   speak(`Write ${n} using tens and ones`);
-  inputRow.style.display = 'flex';
-  answerInput.placeholder = 'tens ones';
-  answerInput.focus();
+  
+  const t2 = document.getElementById('pvTens2');
+  const o2 = document.getElementById('pvOnes2');
+  t2.focus();
+  t2.oninput = () => { if (t2.value.length >= 2) o2.focus(); };
+  o2.onkeydown = (e) => { if (e.key === 'Enter') submitPlaceValueDiff(); };
+  
+  const submitBtn = document.createElement('button');
+  submitBtn.textContent = 'Submit';
+  submitBtn.onclick = submitPlaceValueDiff;
+  submitBtn.style.marginTop = '15px';
+  optEl.appendChild(submitBtn);
+}
+
+function submitPlaceValueDiff() {
+  const t = document.getElementById('pvTens2').value.trim();
+  const o = document.getElementById('pvOnes2').value.trim();
+  const answer = `${t} ${o}`;
+  
+  if (answer === currentAnswer) return handleCorrect();
+  else return handleWrong(currentAnswer);
 }
 
 function showNearestTen(n) {
@@ -506,6 +577,8 @@ function handleCorrect() {
     state.mastered.push(state.lastQuestion);
   }
   
+  state.lastQuestion = null; // ADD THIS LINE - Clear question after correct answer
+  
   save();
   showTempMessage('Excellent!', 800, 'success');
   
@@ -527,7 +600,6 @@ function handleCorrect() {
     setTimeout(() => nextQuestion(), 700);
   }
 }
-
 function handleWrong(correct) {
   state.streak = 0;
   playSound('wrong');
