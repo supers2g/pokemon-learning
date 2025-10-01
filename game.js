@@ -961,4 +961,3 @@ window.onload = function() {
   
   gameTimerInterval = setInterval(checkEggs, 1000);
 };
-  collectionBar.innerHTML = '';
