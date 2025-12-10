@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Dash Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .hidden { display: none; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .gap-4 { gap: 1rem; }
+        .text-center { text-align: center; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .font-bold { font-weight: 700; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-5 { margin-bottom: 1.25rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .w-full { width: 100%; }
+        .p-4 { padding: 1rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .text-white { color: white; }
+        .text-gray-300 { color: #d1d5db; }
+        .text-yellow-400 { color: #fbbf24; }
+        
+        body {
+            background: linear-gradient(135deg, #0d0d26 0%, #1a1a3e 100%);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        .game-container {
+            background: linear-gradient(145deg, #1e1e3f 0%, #252550 100%);
+            border: 4px solid #8d4fbf;
+            border-radius: 16px;
+            box-shadow: 0 0 40px rgba(141, 79, 191, 0.6), 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 24px;
+        }
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #2a2a4f 0%, #1f1f3f 100%);
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .controls-panel {
+            padding-top: 20px;
+            text-align: center;
+        }
+        .math-input {
+            transition: all 0.3s ease;
+            outline: none;
+            border: 3px solid #8d4fbf;
+            color: #1e1e3f;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .math-input:focus {
+            border-color: #ffbe0b;
+            box-shadow: 0 0 15px rgba(255, 190, 11, 0.5);
+            transform: scale(1.02);
+        }
+        .btn {
+            background: linear-gradient(145deg, #8d4fbf 0%, #6a3a99 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.2s;
+            box-shadow: 0 5px 0 #6a3a99, 0 8px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            border: none;
+        }
+        .btn:hover {
+            background: linear-gradient(145deg, #6a3a99 0%, #8d4fbf 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0 #6a3a99, 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #6a3a99, 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #jumpButton {
+            background: linear-gradient(145deg, #4CAF50 0%, #388E3C 100%);
+            box-shadow: 0 5px 0 #2E7D32, 0 8px 15px rgba(0, 0, 0, 0.3);
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+        }
+        #jumpButton:hover { 
+            background: linear-gradient(145deg, #388E3C 0%, #4CAF50 100%);
+            box-shadow: 0 7px 0 #2E7D32, 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+        #jumpButton:active { 
+            box-shadow: 0 2px 0 #2E7D32, 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .score-display {
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 1.4rem;
+            color: #ffbe0b;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 190, 11, 0.6), 0 0 20px rgba(255, 190, 11, 0.3);
+            padding: 12px;
+            background: rgba(141, 79, 191, 0.2);
+            border-radius: 8px;
+            border: 2px solid rgba(141, 79, 191, 0.4);
+        }
+        .game-status {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, #1e1e3f 0%, #252550 100%);
+            padding: 40px;
+            border-radius: 16px;
+            border: 4px solid #ffbe0b;
+            z-index: 10;
+            box-shadow: 0 0 50px rgba(255, 190, 11, 0.5), 0 10px 40px rgba(0, 0, 0, 0.5);
+            min-width: 320px;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+        .pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .math-panel-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, #1e1e3f 0%, #252550 100%);
+            padding: 40px;
+            border-radius: 16px;
+            border: 4px solid #8d4fbf;
+            z-index: 20;
+            box-shadow: 0 0 50px rgba(141, 79, 191, 0.8), 0 10px 40px rgba(0, 0, 0, 0.5);
+            min-width: 400px;
+        }
+
+        /* Leaderboard Styles */
+        .leaderboard-container {
+            margin-top: 15px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(141, 79, 191, 0.5);
+        }
+        .leaderboard-title {
+            color: #ffbe0b;
+            font-family: 'Chakra Petch', sans-serif;
+            text-align: center;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            border-bottom: 1px solid rgba(255, 190, 11, 0.3);
+            padding-bottom: 5px;
+        }
+        .leaderboard-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 0.9rem;
+        }
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        .leaderboard-item.highlight {
+            color: #ffbe0b;
+            font-weight: bold;
+            background: rgba(255, 190, 11, 0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="score-display text-center" id="scoreDisplay">Score: 0</div>
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Math Interaction Panel (Overlay) -->
+    <div id="mathPanel" class="math-panel-overlay hidden fade-in">
+        <h2 class="text-2xl font-bold mb-5 text-center" style="color: #ffbe0b; text-shadow: 0 0 10px rgba(255, 190, 11, 0.5);">🧮 Math Challenge!</h2>
+        <h3 id="mathQuestion" class="text-xl font-bold mb-6 text-white text-center"></h3>
+        <div class="flex flex-col items-center justify-center gap-4">
+            <input type="number" id="answerInput" placeholder="Your Answer"
+                   class="math-input p-4 rounded-lg w-full text-center">
+            <button id="submitAnswer" class="btn w-full">
+                Submit Answer ✓
+            </button>
+        </div>
+        <p class="text-sm text-gray-300 text-center mt-4">Answer correctly to continue!</p>
+    </div>
+
+    <!-- Game Over/Start Panel with Leaderboard -->
+    <div id="statusPanel" class="game-status hidden fade-in">
+        <h2 id="statusMessage" class="text-3xl font-bold mb-2 text-center" style="color: #ffbe0b; text-shadow: 0 0 10px rgba(255, 190, 11, 0.5);">Game Over!</h2>
+        <p class="text-center mb-4 text-lg">Final Score: <span id="finalScore" class="font-bold text-2xl text-yellow-400">0</span></p>
+        
+        <!-- Leaderboard Section -->
+        <div class="leaderboard-container">
+            <h3 class="leaderboard-title">🏆 Top 5 Scores</h3>
+            <ul id="leaderboardList" class="leaderboard-list">
+                <!-- Scores injected by JS -->
+            </ul>
+        </div>
+
+        <button id="restartButton" class="btn w-full">
+            🎮 Restart Game (Press 'V')
+        </button>
+    </div>
+
+    <div class="controls-panel mt-4">
+        <button id="jumpButton" class="btn w-full">
+            ⬆️ JUMP (SPACEBAR)
+        </button>
+    </div>
+</div>
+
+<script>
+    // --- Canvas Setup ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const panel = document.getElementById('mathPanel');
+    const questionEl = document.getElementById('mathQuestion');
+    const answerInput = document.getElementById('answerInput');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const statusPanel = document.getElementById('statusPanel');
+    const statusMessage = document.getElementById('statusMessage');
+    const finalScore = document.getElementById('finalScore');
+    const jumpButton = document.getElementById('jumpButton');
+    const submitButton = document.getElementById('submitAnswer');
+    const leaderboardList = document.getElementById('leaderboardList');
+
+    // Colors (accessible in JS)
+    const COLORS = {
+        primary: '#8d4fbf',
+        secondary: '#ffbe0b',
+        bg: '#1e1e3f',
+        spike: '#e63946',
+        block: '#6ab89d',
+        player: '#ffbe0b'
+    };
+
+    // FIX: Use 'var' for globals to avoid re-declaration errors in preview environments
+    var W, H, GROUND_Y; 
+
+    function resizeCanvas() {
+        const container = canvas.parentElement;
+        const newWidth = container.clientWidth;
+        const newHeight = 350;
+        
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        
+        W = canvas.width;
+        H = canvas.height;
+        GROUND_Y = H - 40;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // --- Game Constants ---
+    const GAME_SPEED = 5;
+    const GRAVITY = 0.7;
+    const JUMP_POWER = -14;
+    const PLAYER_SIZE = 24;
+    const MATH_GATE_INTERVAL = 500;
+
+    let gameLoopInterval;
+    let score = 0;
+    let isRunning = false;
+    let isGamePausedForMath = false;
+    let currentProblem = null;
+    let currentGate = null;
+
+    // --- Player Object ---
+    const player = {
+        x: 80,
+        y: GROUND_Y - PLAYER_SIZE,
+        vy: 0,
+        onGround: true,
+        width: PLAYER_SIZE,
+        height: PLAYER_SIZE,
+        
+        draw() {
+            // Draw player as a rounded square with gradient
+            const gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.height);
+            gradient.addColorStop(0, COLORS.secondary);
+            gradient.addColorStop(1, '#ff8800');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            
+            // Add border
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.x, this.y, this.width, this.height);
+            
+            // Add "eyes"
+            ctx.fillStyle = 'black';
+            ctx.fillRect(this.x + 6, this.y + 8, 4, 4);
+            ctx.fillRect(this.x + 14, this.y + 8, 4, 4);
+        },
+        
+        update() {
+            if (!isRunning || isGamePausedForMath) return;
+            this.vy += GRAVITY;
+            this.y += this.vy;
+        }
+    };
+
+    function playerJump() {
+        if (isRunning && !isGamePausedForMath && player.onGround) {
+            player.onGround = false;
+            player.vy = JUMP_POWER;
+            scoreDisplay.classList.add('pulse');
+            setTimeout(() => scoreDisplay.classList.remove('pulse'), 500);
+        }
+    }
+
+    // --- Obstacle Classes ---
+    const obstacles = [];
+    let nextObstacleTime = 0;
+    let scoreSinceLastGate = 0;
+
+    class Spike {
+        constructor(x, size) {
+            this.x = x;
+            this.y = GROUND_Y - size;
+            this.width = size;
+            this.height = size;
+            this.isGate = false;
+            this.isBlock = false;
+        }
+        
+        draw() {
+            const gradient = ctx.createLinearGradient(this.x, this.y, this.x, GROUND_Y);
+            gradient.addColorStop(0, COLORS.spike);
+            gradient.addColorStop(1, '#b02a37');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(this.x, GROUND_Y);
+            ctx.lineTo(this.x + this.width / 2, this.y);
+            ctx.lineTo(this.x + this.width, GROUND_Y);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.strokeStyle = '#8b1e2b';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        update() {
+            if (!isGamePausedForMath) {
+                this.x -= GAME_SPEED;
+            }
+        }
+    }
+
+    class Block {
+        constructor(x, width, height) {
+            this.x = x;
+            this.width = width;
+            this.height = height;
+            this.y = GROUND_Y - this.height;
+            this.isGate = false;
+            this.isBlock = true;
+        }
+        
+        draw() {
+            const gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.height);
+            gradient.addColorStop(0, COLORS.block);
+            gradient.addColorStop(1, '#4a8c75');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            
+            ctx.strokeStyle = '#3a6b5c';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(this.x, this.y, this.width, this.height);
+            
+            // Add texture lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i < 3; i++) {
+                const y = this.y + (this.height / 3) * i;
+                ctx.beginPath();
+                ctx.moveTo(this.x, y);
+                ctx.lineTo(this.x + this.width, y);
+                ctx.stroke();
+            }
+        }
+        
+        update() {
+            if (!isGamePausedForMath) {
+                this.x -= GAME_SPEED;
+            }
+        }
+    }
+
+    class MathGate {
+        constructor(x) {
+            this.x = x;
+            this.width = 80;
+            this.height = H;
+            // FIX: Essential! Must define y for collision detection logic to work.
+            this.y = 0; 
+            this.isGate = true;
+            this.isBlock = false;
+            this.hasTriggered = false;
+            this.pulse = 0;
+        }
+        
+        draw() {
+            this.pulse += 0.1;
+            const alpha = 0.5 + Math.sin(this.pulse) * 0.2;
+            
+            // Wide vertical gate with animated gradient
+            const gradient = ctx.createLinearGradient(this.x, 0, this.x + this.width, 0);
+            gradient.addColorStop(0, `rgba(141, 79, 191, ${alpha})`);
+            gradient.addColorStop(0.5, `rgba(141, 79, 191, ${alpha + 0.3})`);
+            gradient.addColorStop(1, `rgba(141, 79, 191, ${alpha})`);
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(this.x, 0, this.width, H);
+            
+            // Multiple borders for visibility
+            ctx.strokeStyle = COLORS.primary;
+            ctx.lineWidth = 5;
+            ctx.strokeRect(this.x, 0, this.width, H);
+            
+            // Inner border
+            ctx.strokeStyle = COLORS.secondary;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.x + 5, 5, this.width - 10, H - 10);
+            
+            // Text
+            ctx.fillStyle = 'white';
+            ctx.font = "bold 24px 'Chakra Petch', sans-serif";
+            ctx.textAlign = 'center';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'black';
+            ctx.fillText("MATH", this.x + this.width / 2, H / 2 - 10);
+            ctx.fillText("GATE", this.x + this.width / 2, H / 2 + 20);
+            ctx.shadowBlur = 0;
+        }
+        
+        update() {
+            if (!isGamePausedForMath) {
+                this.x -= GAME_SPEED;
+            }
+        }
+    }
+
+    function spawnObstacle() {
+        if (!isRunning || isGamePausedForMath) return;
+
+        if (scoreSinceLastGate >= MATH_GATE_INTERVAL) {
+            const gate = new MathGate(W);
+            obstacles.push(gate);
+            scoreSinceLastGate = 0;
+        } else {
+            if (Math.random() < 0.65) {
+                const size = 20 + Math.random() * 35;
+                obstacles.push(new Spike(W, size));
+            } else {
+                const width = 35 + Math.random() * 50;
+                const height = 35 + Math.random() * 50;
+                obstacles.push(new Block(W, width, height));
+            }
+        }
+
+        nextObstacleTime = 35 + Math.random() * 55;
+    }
+
+    // --- Math Logic ---
+    function generateMathProblem() {
+        let question, answer;
+        const type = Math.floor(Math.random() * 5);
+
+        if (score < 100 || type < 3) {
+            const a = Math.floor(Math.random() * 20) + 5;
+            const b = Math.floor(Math.random() * 10) + 1;
+            
+            switch (type % 3) {
+                case 0:
+                    question = `${a} + ${b} = ?`;
+                    answer = a + b;
+                    break;
+                case 1:
+                    const tempA = Math.max(a, b * 2);
+                    const tempB = Math.min(a, b);
+                    question = `${tempA} - ${tempB} = ?`;
+                    answer = tempA - tempB;
+                    break;
+                case 2:
+                    question = `${a} × ${b} = ?`;
+                    answer = a * b;
+                    break;
+            }
+        } else {
+            const x = Math.floor(Math.random() * 8) + 2;
+            const p = Math.floor(Math.random() * 5) + 2;
+
+            switch (type) {
+                case 3:
+                    const a = p;
+                    const b = 5;
+                    const c = a * x + b;
+                    question = `If ${a}x + ${b} = ${c}, what is x?`;
+                    answer = x;
+                    break;
+                case 4:
+                    if (Math.random() < 0.5) {
+                        question = `Perimeter of square (side=${x})?`;
+                        answer = x * 4;
+                    } else {
+                        const y = Math.floor(Math.random() * 5) + 2;
+                        question = `Area of rectangle (${x}×${y})?`;
+                        answer = x * y;
+                    }
+                    break;
+            }
+        }
+
+        return { question, answer: Math.round(answer) };
+    }
+
+    function triggerMathGate(gate) {
+        if (gate.hasTriggered) return;
+        
+        console.log("Math gate triggered!");
+        gate.hasTriggered = true;
+        currentGate = gate;
+        
+        isGamePausedForMath = true;
+        jumpButton.disabled = true;
+
+        currentProblem = generateMathProblem();
+        console.log("Problem:", currentProblem);
+        questionEl.textContent = currentProblem.question;
+        answerInput.value = '';
+        panel.classList.remove('hidden');
+        
+        // Focus after a small delay to ensure visibility
+        setTimeout(() => {
+            answerInput.focus();
+        }, 100);
+    }
+
+    function checkMathAnswer() {
+        if (!isGamePausedForMath || !currentProblem) return;
+
+        const userAnswer = parseInt(answerInput.value);
+        const correctAnswer = currentProblem.answer;
+
+        console.log("User answer:", userAnswer, "Correct:", correctAnswer);
+
+        if (userAnswer === correctAnswer) {
+            // Remove the gate
+            const gateIndex = obstacles.indexOf(currentGate);
+            if (gateIndex !== -1) {
+                obstacles.splice(gateIndex, 1);
+            }
+
+            isGamePausedForMath = false;
+            jumpButton.disabled = false;
+            panel.classList.add('hidden');
+            currentProblem = null;
+            currentGate = null;
+            
+            // Bonus points
+            score += 50;
+            scoreDisplay.textContent = `Score: ${score} - ✅ CORRECT! +50 BONUS!`;
+            scoreDisplay.classList.add('pulse');
+            setTimeout(() => {
+                scoreDisplay.classList.remove('pulse');
+            }, 1000);
+        } else {
+            gameOver(`❌ Incorrect! The answer was ${currentProblem.answer}`);
+        }
+    }
+
+    // --- Collision Detection ---
+    function checkCollision(obj1, obj2) {
+        // FIX: obj2.y must be defined for this check to work!
+        const collision = (
+            obj1.x < obj2.x + obj2.width &&
+            obj1.x + obj1.width > obj2.x &&
+            obj1.y < obj2.y + obj2.height &&
+            obj1.y + obj1.height > obj2.y
+        );
+        
+        if (collision && obj2.isGate) {
+            console.log("GATE COLLISION DETECTED!");
+        }
+        
+        return collision;
+    }
+
+    function drawGround() {
+        const gradient = ctx.createLinearGradient(0, GROUND_Y, 0, H);
+        gradient.addColorStop(0, '#455A64');
+        gradient.addColorStop(1, '#2d3e47');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
+        
+        // Ground line
+        ctx.strokeStyle = '#607D8B';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(0, GROUND_Y);
+        ctx.lineTo(W, GROUND_Y);
+        ctx.stroke();
+    }
+
+    // --- Leaderboard Logic ---
+    function formatDate() {
+        const d = new Date();
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        const hours = d.getHours().toString().padStart(2, '0');
+        const minutes = d.getMinutes().toString().padStart(2, '0');
+        return `${month}/${day} ${hours}:${minutes}`;
+    }
+
+    function updateLeaderboard(newScore) {
+        let scores = [];
+        try {
+            const stored = localStorage.getItem('mathDashHighScores');
+            if (stored) {
+                scores = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.error("Local storage error:", e);
+        }
+
+        // Add new score
+        scores.push({ score: newScore, date: formatDate() });
+
+        // Sort descending by score
+        scores.sort((a, b) => b.score - a.score);
+
+        // Keep top 5
+        scores = scores.slice(0, 5);
+
+        // Save back
+        try {
+            localStorage.setItem('mathDashHighScores', JSON.stringify(scores));
+        } catch (e) {
+            console.error("Failed to save score:", e);
+        }
+
+        // Render HTML
+        leaderboardList.innerHTML = scores.map((s, i) => {
+            const isCurrentRun = (s.score === newScore); 
+            // Note: simple check, might highlight multiple if identical scores, but acceptable for this scope
+            return `
+                <li class="leaderboard-item ${isCurrentRun ? 'highlight' : 'text-white'}">
+                    <span>${i + 1}. ${s.date}</span>
+                    <span>${s.score} pts</span>
+                </li>
+            `;
+        }).join('');
+    }
+
+    function gameOver(message) {
+        isRunning = false;
+        isGamePausedForMath = false;
+        clearInterval(gameLoopInterval);
+        
+        statusMessage.textContent = message || "💥 GAME OVER!";
+        finalScore.textContent = score;
+        
+        // Update Leaderboard Logic
+        updateLeaderboard(score);
+
+        statusPanel.classList.remove('hidden');
+        statusPanel.classList.add('fade-in');
+        jumpButton.disabled = true;
+        panel.classList.add('hidden');
+    }
+
+    function update() {
+        if (!isRunning) {
+            return;
+        }
+
+        ctx.clearRect(0, 0, W, H);
+        drawGround();
+
+        // Only update player physics when not paused
+        if (!isGamePausedForMath) {
+            player.update();
+            player.onGround = false;
+        }
+
+        if (nextObstacleTime <= 0 && !isGamePausedForMath) {
+            spawnObstacle();
+        } else if (!isGamePausedForMath) {
+            nextObstacleTime--;
+        }
+
+        let isPlayerOnBlock = false;
+
+        for (let i = obstacles.length - 1; i >= 0; i--) {
+            const obstacle = obstacles[i];
+            obstacle.update();
+            obstacle.draw();
+
+            // Check collision - ALWAYS check for gates, even when paused
+            if (checkCollision(player, obstacle)) {
+                if (obstacle.isGate && !obstacle.hasTriggered && !isGamePausedForMath) {
+                    console.log("Collision with gate detected! Triggering math question...");
+                    triggerMathGate(obstacle);
+                } else if (!isGamePausedForMath && !obstacle.isGate) {
+                    // Only check other obstacles when not in math mode
+                    if (obstacle.isBlock) {
+                        const playerFeet = player.y + player.height;
+                        const playerPrevFeet = playerFeet - player.vy;
+                        const blockTop = obstacle.y;
+                        
+                        if (player.vy >= 0 && playerPrevFeet <= blockTop + 5) {
+                            player.y = blockTop - player.height;
+                            player.vy = 0;
+                            isPlayerOnBlock = true;
+                        } else {
+                            gameOver("💥 You crashed into a block!");
+                            return;
+                        }
+                    } else {
+                        gameOver("💥 You hit a spike!");
+                        return;
+                    }
+                }
+            }
+
+            // Remove off-screen obstacles
+            if (obstacle.x + obstacle.width < 0) {
+                obstacles.splice(i, 1);
+            }
+        }
+
+        if (!isGamePausedForMath) {
+            if (player.y >= GROUND_Y - player.height) {
+                player.y = GROUND_Y - player.height;
+                player.vy = 0;
+                player.onGround = true;
+            } else if (isPlayerOnBlock) {
+                player.onGround = true;
+            }
+
+            score += 1;
+            scoreSinceLastGate += 1;
+        }
+
+        player.draw();
+        
+        const remaining = MATH_GATE_INTERVAL - scoreSinceLastGate;
+        if (!isGamePausedForMath) {
+            scoreDisplay.textContent = `Score: ${score} | Next Math Gate: ${remaining}`;
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+        drawGround();
+        obstacles.forEach(obstacle => obstacle.draw());
+        player.draw();
+    }
+
+    function resetGame() {
+        score = 0;
+        nextObstacleTime = 30;
+        scoreSinceLastGate = 0;
+        obstacles.length = 0;
+        player.y = GROUND_Y - PLAYER_SIZE;
+        player.vy = 0;
+        player.onGround = true;
+        isRunning = true;
+        isGamePausedForMath = false;
+        currentProblem = null;
+        currentGate = null;
+
+        statusPanel.classList.add('hidden');
+        panel.classList.add('hidden');
+        jumpButton.disabled = false;
+        scoreDisplay.textContent = `Score: 0 | Next Math Gate: ${MATH_GATE_INTERVAL}`;
+
+        if (gameLoopInterval) clearInterval(gameLoopInterval);
+        gameLoopInterval = setInterval(update, 1000 / 60);
+    }
+
+    // --- Event Listeners ---
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            e.preventDefault();
+            playerJump();
+        }
+        // Restart hotkey 'V'
+        if (e.key.toLowerCase() === 'v') {
+            if (!isRunning) { // Only restart if game is over
+                resetGame();
+            }
+        }
+    });
+
+    answerInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            checkMathAnswer();
+        }
+    });
+
+    submitButton.addEventListener('click', checkMathAnswer);
+    document.getElementById('restartButton').addEventListener('click', resetGame);
+    jumpButton.addEventListener('click', playerJump);
+
+    window.onload = () => setTimeout(resetGame, 100);
+</script>
+</body>
+</html>
