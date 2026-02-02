@@ -10,114 +10,157 @@
         
         body {
             font-family: 'Quicksand', sans-serif;
-            background: #f0f9ff;
+            background: #0f172a;
+            color: white;
             touch-action: manipulation;
+            overflow-x: hidden;
         }
         .title-font { font-family: 'Luckiest+Guy', cursive; }
-        .card { border-radius: 20px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-        .btn-bounce:active { transform: scale(0.95); }
-        .fade-in { animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        canvas { max-width: 100%; height: auto; }
-        
-        .read-aloud-btn {
-            animation: pulse 2s infinite;
+        .card { 
+            border-radius: 30px; 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
+        .btn-bounce {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-bounce:active { transform: scale(0.9); }
+        .btn-bounce:hover { transform: translateY(-5px); filter: brightness(1.1); }
+        
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        canvas { max-width: 100%; height: auto; filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.3)); }
+        
+        .dragon-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
         }
 
-        .shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff0;
+            z-index: 100;
         }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
+
+        .number-input-box {
+            width: 90px;
+            height: 90px;
+            font-size: 3rem;
+            text-align: center;
+            background: #1e293b;
+            color: #fbbf24;
+            border: 4px solid #334155;
+            border-radius: 1.5rem;
+            outline: none;
+            transition: all 0.3s;
+            font-family: 'Luckiest+Guy', cursive;
+        }
+        .number-input-box:focus { 
+            border-color: #fbbf24; 
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+            transform: scale(1.05);
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
         }
         
-        .number-input-box {
-            width: 80px;
-            height: 80px;
-            font-size: 2.5rem;
-            text-align: center;
-            border: 4px solid #dbeafe;
-            border-radius: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
+        .magical-text {
+            background: linear-gradient(to right, #fbbf24, #f59e0b, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
         }
-        .number-input-box:focus { border-color: #60a5fa; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4">
 
     <!-- Game Header -->
-    <div class="w-full max-w-2xl flex justify-between items-center mb-6 bg-white p-4 rounded-2xl shadow-sm">
+    <div class="w-full max-w-2xl flex justify-between items-center mb-6 bg-slate-800/50 p-4 rounded-3xl border border-white/10">
         <div class="flex items-center gap-3">
-            <div class="bg-yellow-400 p-2 rounded-full text-2xl">⭐</div>
+            <div class="bg-yellow-400 p-2 rounded-2xl text-2xl shadow-lg shadow-yellow-400/20">⭐</div>
             <div>
-                <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Score</p>
-                <p id="score" class="text-xl font-bold text-blue-600">0</p>
+                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Gems</p>
+                <p id="score" class="text-xl font-bold text-yellow-400">0</p>
             </div>
         </div>
         <div class="text-center">
-            <h1 class="title-font text-2xl text-orange-500 tracking-wide">Fraction Kingdom</h1>
-            <p id="level-name" class="text-xs font-bold text-gray-400">Level 1: The Dragon Bakery</p>
+            <h1 class="title-font text-3xl magical-text tracking-wider">Fraction Quest</h1>
+            <p id="level-name" class="text-[10px] font-bold text-blue-400 uppercase tracking-tighter">Level 1: The Dragon Bakery</p>
         </div>
         <div class="flex items-center gap-3">
-            <div class="bg-blue-400 p-2 rounded-full text-2xl">🏆</div>
+            <div class="bg-blue-500 p-2 rounded-2xl text-2xl shadow-lg shadow-blue-500/20">🔥</div>
             <div>
-                <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Streak</p>
-                <p id="streak" class="text-xl font-bold text-blue-600">0</p>
+                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Streak</p>
+                <p id="streak" class="text-xl font-bold text-blue-400">0</p>
             </div>
         </div>
     </div>
 
     <!-- Main Game Area -->
-    <main id="game-container" class="w-full max-w-2xl bg-white card p-6 md:p-10 relative overflow-hidden min-h-[500px] flex flex-col">
+    <main id="game-container" class="w-full max-w-2xl card p-6 md:p-10 relative overflow-hidden min-h-[550px] flex flex-col items-center">
         
-        <!-- Read Aloud Helper -->
-        <div id="tts-container" class="absolute top-4 right-4 hidden">
-            <button onclick="readQuestion()" class="read-aloud-btn bg-yellow-100 border-2 border-yellow-400 text-yellow-700 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2">
-                <span>🔊</span> Listen
-            </button>
-        </div>
+        <!-- Dragon Mascot -->
+        <div id="dragon-mascot" class="dragon-float text-6xl mb-2 transition-all duration-300">🐲</div>
 
         <!-- Question Text -->
-        <div id="question-area" class="mb-6 fade-in">
-            <h2 id="question-text" class="text-xl md:text-2xl font-bold text-gray-800 text-center mb-4">
-                Loading your quest...
+        <div id="question-area" class="mb-6 fade-in w-full">
+            <h2 id="question-text" class="text-xl md:text-2xl font-bold text-white text-center leading-tight">
+                Preparing your magical quest...
             </h2>
         </div>
 
-        <!-- Visuals Area (Canvas/Images) -->
-        <div id="visual-container" class="flex flex-wrap justify-center items-center gap-4 mb-8 min-h-[160px]">
-            <!-- Dynamic Content Injected Here -->
+        <!-- Visuals Area -->
+        <div id="visual-container" class="flex flex-wrap justify-center items-center gap-6 mb-8 min-h-[180px] w-full">
+            <!-- Dynamic Content -->
         </div>
 
         <!-- Input/Buttons Area -->
-        <div id="action-area" class="mt-auto flex flex-col gap-4">
-            <!-- Buttons or Inputs Injected Here -->
+        <div id="action-area" class="mt-auto w-full flex flex-col gap-4">
+            <!-- Buttons or Inputs -->
         </div>
 
-        <!-- Hint Text for Spelling -->
-        <div id="spelling-hint" class="text-center text-orange-500 font-bold mt-2 hidden h-6"></div>
+        <!-- Hint Text -->
+        <div id="spelling-hint" class="text-center text-orange-400 font-bold mt-2 hidden h-6 italic"></div>
 
     </main>
 
-    <!-- Feedback Message Box -->
-    <div id="feedback" class="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pointer-events-none opacity-0 transition-opacity duration-300">
-        <div id="feedback-content" class="bg-white border-4 border-green-400 p-4 rounded-2xl shadow-2xl text-center">
-            <p id="feedback-text" class="text-lg font-bold"></p>
+    <!-- Feedback Popup -->
+    <div id="feedback" class="fixed inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300 z-50">
+        <div id="feedback-content" class="bg-slate-800 border-4 border-yellow-400 p-8 rounded-full shadow-2xl text-center transform scale-50 transition-transform duration-300">
+            <p id="feedback-text" class="text-3xl title-font text-white"></p>
         </div>
     </div>
 
     <script>
-        // Game State
+        // Audio Context for Fun Effects
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, type, duration) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
         const state = {
             score: 0,
             streak: 0,
@@ -125,19 +168,17 @@
             difficulty: 1,
             troubleTopics: [],
             questionsAnswered: 0,
-            ttsTimer: null,
-            lastTopics: [] // Prevent same topic back-to-back
+            lastTopics: []
         };
 
         const QUESTIONS_CONFIG = [
             { topic: 'equal-parts', weight: 1 },
             { topic: 'naming', weight: 2 },
             { topic: 'identify-fraction', weight: 2 },
-            { topic: 'mixed-number-fill', weight: 3 },
-            { topic: 'improper-fill', weight: 3 },
+            { topic: 'mixed-number-fill', weight: 4 },
+            { topic: 'improper-fill', weight: 4 },
             { topic: 'compare', weight: 2 },
-            { topic: 'multi-choice-visual', weight: 2 },
-            { topic: 'word-problem', weight: 1 }
+            { topic: 'multi-choice-visual', weight: 3 }
         ];
 
         function init() {
@@ -145,59 +186,37 @@
             updateUI();
         }
 
-        function readQuestion() {
-            if (!state.currentQuestion) return;
-            const msg = new SpeechSynthesisUtterance(state.currentQuestion.text);
-            msg.rate = 0.9;
-            window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(msg);
-        }
-
-        function generateNextQuestion() {
-            clearTimeout(state.ttsTimer);
-            document.getElementById('tts-container').classList.add('hidden');
-            document.getElementById('spelling-hint').classList.add('hidden');
-            window.speechSynthesis.cancel();
-
-            let topic;
-            if (state.troubleTopics.length > 0 && Math.random() > 0.6) {
-                topic = state.troubleTopics.shift();
-            } else {
-                // Weighted random selection to ensure diversity
-                const available = QUESTIONS_CONFIG.filter(c => !state.lastTopics.includes(c.topic));
-                const pool = [];
-                available.forEach(c => {
-                    for(let i=0; i<c.weight; i++) pool.push(c.topic);
-                });
-                topic = pool[Math.floor(Math.random() * pool.length)];
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                p.style.width = Math.random() * 10 + 5 + 'px';
+                p.style.height = p.style.width;
+                p.style.backgroundColor = color;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 10 + 5;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity;
+                
+                document.body.appendChild(p);
+                
+                let opacity = 1;
+                const animate = () => {
+                    opacity -= 0.02;
+                    const curX = parseFloat(p.style.left);
+                    const curY = parseFloat(p.style.top);
+                    p.style.left = (curX + vx) + 'px';
+                    p.style.top = (curY + vy) + 'px';
+                    p.style.opacity = opacity;
+                    
+                    if (opacity > 0) requestAnimationFrame(animate);
+                    else p.remove();
+                };
+                requestAnimationFrame(animate);
             }
-
-            // Keep track of recent topics to avoid repetition
-            state.lastTopics.push(topic);
-            if (state.lastTopics.length > 3) state.lastTopics.shift();
-
-            const q = buildQuestion(topic);
-            state.currentQuestion = q;
-            renderQuestion(q);
-
-            state.ttsTimer = setTimeout(() => {
-                document.getElementById('tts-container').classList.remove('hidden');
-            }, 7000);
-        }
-
-        function getEditDistance(a, b) {
-            if (a.length === 0) return b.length;
-            if (b.length === 0) return a.length;
-            const matrix = [];
-            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
-            for (let i = 1; i <= b.length; i++) {
-                for (let j = 1; j <= a.length; j++) {
-                    if (b.charAt(i - 1) === a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
-                    else matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
-                }
-            }
-            return matrix[b.length][a.length];
         }
 
         function buildQuestion(topic) {
@@ -205,7 +224,7 @@
                 'equal-parts': () => {
                     const correctIndex = Math.floor(Math.random() * 3);
                     return {
-                        text: "Which shape shows equal pieces?",
+                        text: "Which egg is cut into PERFECTLY equal pieces?",
                         type: 'choice',
                         options: [0, 1, 2].map(i => ({
                             isCorrect: i === correctIndex,
@@ -219,33 +238,28 @@
                     const names = {2:'half', 3:'third', 4:'fourth', 5:'fifth', 8:'eighth'};
                     const variants = [names[parts], names[parts]+'s', parts === 4 ? 'quarter' : '', parts === 4 ? 'quarters' : ''].filter(Boolean);
                     return {
-                        text: `If a pizza is cut into ${parts} equal slices, one slice is called a ________.`,
+                        text: `If a dragon cake is cut into ${parts} equal pieces, one piece is called a...`,
                         type: 'input',
                         check: (val) => {
                             const clean = val.toLowerCase().trim();
                             if (variants.includes(clean)) return { status: 'correct' };
-                            for (let variant of variants) {
-                                if (getEditDistance(clean, variant) <= 2 && clean.length > 2) {
-                                    return { status: 'spelling', hint: `Almost! Did you mean "${variant}"?` };
-                                }
-                            }
                             return { status: 'wrong' };
                         },
-                        placeholder: "Type the name...",
+                        placeholder: "Type the name",
                         topic
                     };
                 },
                 'mixed-number-fill': () => {
-                    const wholes = Math.floor(Math.random() * 3) + 1;
+                    const wholes = Math.floor(Math.random() * 2) + 1;
                     const parts = [2, 4][Math.floor(Math.random() * 2)];
                     const extras = Math.floor(Math.random() * (parts - 1)) + 1;
                     const partName = parts === 2 ? (extras === 1 ? "half" : "halves") : (extras === 1 ? "fourth" : "fourths");
                     
                     return {
-                        text: `Look at the shapes. How many wholes and how many ${partName}?`,
+                        text: `The dragon ate these! Count the Wholes and the ${partName.toUpperCase()}.`,
                         type: 'mixed-input',
                         visual: { type: 'multi', wholes, extras, parts },
-                        labels: ["wholes", partName],
+                        labels: ["WHOLES", partName.toUpperCase()],
                         check: (w, p) => parseInt(w) === wholes && parseInt(p) === extras,
                         topic
                     };
@@ -256,24 +270,23 @@
                     const totalParts = (wholes * parts) + (Math.floor(Math.random() * parts));
                     const partName = parts === 2 ? "halves" : "fourths";
                     
-                    // Logic to draw the total
                     const visualWholes = Math.floor(totalParts / parts);
                     const visualExtras = totalParts % parts;
 
                     return {
-                        text: `Count all the pieces! How many ${partName} are there in total?`,
+                        text: `Count EVERY SINGLE PIECE! How many total ${partName} are there?`,
                         type: 'input',
                         visual: { type: 'multi', wholes: visualWholes, extras: visualExtras, parts },
                         check: (val) => parseInt(val) === totalParts ? { status: 'correct' } : { status: 'wrong' },
-                        placeholder: "Total pieces",
+                        placeholder: "Total count",
                         topic
                     };
                 },
                 'identify-fraction': () => {
-                    const total = [2, 3, 4, 6, 8][Math.floor(Math.random() * 5)];
+                    const total = [2, 3, 4, 8][Math.floor(Math.random() * 4)];
                     const shaded = Math.floor(Math.random() * (total - 1)) + 1;
                     return {
-                        text: "What fraction of the shape is shaded?",
+                        text: "What part of this magical gem is glowing?",
                         type: 'choice',
                         visual: { type: 'rect', parts: total, shaded },
                         options: [
@@ -281,20 +294,6 @@
                             { text: `${total - shaded}/${total}`, isCorrect: false },
                             { text: `1/${total}`, isCorrect: false }
                         ].sort(() => Math.random() - 0.5),
-                        topic
-                    };
-                },
-                'compare': () => {
-                    const d1 = [2, 4, 8][Math.floor(Math.random() * 3)];
-                    let d2 = [2, 4, 8][Math.floor(Math.random() * 3)];
-                    while(d1 === d2) d2 = [2, 4, 8][Math.floor(Math.random() * 3)];
-                    return {
-                        text: `Which one is a BIGGER piece of the same cake?`,
-                        type: 'choice',
-                        options: [
-                            { text: `1/${d1}`, isCorrect: d1 < d2 },
-                            { text: `1/${d2}`, isCorrect: d2 < d1 }
-                        ],
                         topic
                     };
                 },
@@ -307,47 +306,47 @@
                         const p = isCorrect ? target : (target === 2 ? 4 : 2);
                         return { isCorrect, drawData: { type: 'circle', parts: p, shaded: 1 } };
                     });
-                    return { text: `Find the shape that shows exactly ${name}:`, type: 'choice', options, topic };
-                },
-                'word-problem': () => {
-                    const scenarios = [
-                        { t: "Leo has 4 quarters of a dollar. Does he have a whole dollar?", a: "Yes" },
-                        { t: "If I have 2 halves of an apple, how many whole apples do I have?", a: "1 Whole" },
-                        { t: "A square is cut into 4 equal segments. What is each segment called?", a: "A Fourth" }
-                    ];
-                    const s = scenarios[Math.floor(Math.random() * scenarios.length)];
-                    return {
-                        text: s.t,
-                        type: 'choice',
-                        options: [
-                            { text: s.a, isCorrect: true },
-                            { text: "No / 2 Wholes", isCorrect: false }
-                        ].sort(() => Math.random() - 0.5),
-                        topic
-                    };
+                    return { text: `Which one shows exactly ${name.toUpperCase()}?`, type: 'choice', options, topic };
                 }
             };
 
+            const pool = [];
+            QUESTIONS_CONFIG.forEach(c => { if(c.topic === topic) for(let i=0; i<c.weight; i++) pool.push(c.topic); });
             return types[topic] ? types[topic]() : types['equal-parts']();
+        }
+
+        function generateNextQuestion() {
+            let topic;
+            const available = QUESTIONS_CONFIG.filter(c => !state.lastTopics.includes(c.topic));
+            const pool = [];
+            available.forEach(c => { for(let i=0; i<c.weight; i++) pool.push(c.topic); });
+            topic = pool[Math.floor(Math.random() * pool.length)];
+
+            state.lastTopics.push(topic);
+            if (state.lastTopics.length > 3) state.lastTopics.shift();
+
+            const q = buildQuestion(topic);
+            state.currentQuestion = q;
+            renderQuestion(q);
         }
 
         function renderQuestion(q) {
             const qText = document.getElementById('question-text');
             const visualContainer = document.getElementById('visual-container');
             const actionArea = document.getElementById('action-area');
-            const hintArea = document.getElementById('spelling-hint');
-
+            
             qText.innerText = q.text;
             visualContainer.innerHTML = '';
             actionArea.innerHTML = '';
-            hintArea.classList.add('hidden');
 
-            // Render Visuals
             if (q.options && q.options[0].drawData) {
                 q.options.forEach((opt) => {
                     const canvas = createCanvas(opt.drawData);
-                    canvas.onclick = () => checkAnswer(opt.isCorrect);
-                    canvas.className = "cursor-pointer hover:scale-105 transition-transform p-2 border-2 border-transparent hover:border-blue-400 rounded-xl bg-gray-100";
+                    canvas.onclick = (e) => {
+                        if (opt.isCorrect) createExplosion(e.clientX, e.clientY, '#fbbf24');
+                        checkAnswer(opt.isCorrect);
+                    };
+                    canvas.className = "cursor-pointer hover:scale-110 transition-transform p-3 rounded-3xl bg-slate-800/50 border-2 border-slate-700 hover:border-yellow-400";
                     visualContainer.appendChild(canvas);
                 });
             } else if (q.visual) {
@@ -363,143 +362,121 @@
                 }
             }
 
-            // Render Inputs
             if (q.type === 'mixed-input') {
                 const wrapper = document.createElement('div');
-                wrapper.className = "flex flex-col items-center gap-4 w-full";
-                
+                wrapper.className = "flex flex-col items-center gap-6 w-full";
                 const inputRow = document.createElement('div');
-                inputRow.className = "flex items-center justify-center gap-4 flex-wrap";
+                inputRow.className = "flex items-center justify-center gap-8";
                 
-                const wIn = document.createElement('input');
-                wIn.className = "number-input-box";
-                wIn.type = "number";
-                const pIn = document.createElement('input');
-                pIn.className = "number-input-box";
-                pIn.type = "number";
+                const wIn = document.createElement('input'); wIn.className = "number-input-box"; wIn.type = "number";
+                const pIn = document.createElement('input'); pIn.className = "number-input-box"; pIn.type = "number";
                 
                 inputRow.innerHTML = `
-                    <div class="flex flex-col items-center"><span class="text-xs font-bold uppercase text-gray-400 mb-1">${q.labels[0]}</span></div>
-                    <div class="flex flex-col items-center"><span class="text-xs font-bold uppercase text-gray-400 mb-1">${q.labels[1]}</span></div>
+                    <div class="flex flex-col items-center"><span class="text-sm font-black text-blue-400 mb-2">${q.labels[0]}</span></div>
+                    <div class="flex flex-col items-center"><span class="text-sm font-black text-blue-400 mb-2">${q.labels[1]}</span></div>
                 `;
                 inputRow.children[0].prepend(wIn);
                 inputRow.children[1].prepend(pIn);
                 
-                const submitBtn = document.createElement('button');
-                submitBtn.className = "bg-orange-500 w-full hover:bg-orange-600 text-white font-bold py-4 rounded-2xl btn-bounce text-xl shadow-lg";
-                submitBtn.innerText = "Check Answer!";
-                submitBtn.onclick = () => checkAnswer(q.check(wIn.value, pIn.value));
+                const btn = document.createElement('button');
+                btn.className = "bg-gradient-to-r from-yellow-400 to-orange-500 w-full hover:to-yellow-500 text-slate-900 font-black py-5 rounded-3xl btn-bounce text-2xl shadow-xl uppercase tracking-widest";
+                btn.innerText = "Check My Answer!";
+                btn.onclick = () => checkAnswer(q.check(wIn.value, pIn.value));
                 
                 wrapper.appendChild(inputRow);
-                wrapper.appendChild(submitBtn);
+                wrapper.appendChild(btn);
                 actionArea.appendChild(wrapper);
                 wIn.focus();
             } else if (q.type === 'input') {
                 const input = document.createElement('input');
-                input.type = "text";
-                input.placeholder = q.placeholder;
-                input.className = "border-4 border-blue-100 rounded-2xl p-4 text-center text-2xl focus:border-blue-400 outline-none w-full";
+                input.className = "number-input-box w-full max-w-[200px] mx-auto mb-4";
+                input.type = q.placeholder.includes("Total") ? "number" : "text";
+                input.placeholder = "?";
                 
-                const processInput = () => {
-                    const result = q.check(input.value);
-                    if (result.status === 'spelling') {
-                        hintArea.innerText = result.hint;
-                        hintArea.classList.remove('hidden');
-                        input.classList.add('shake');
-                        setTimeout(() => input.classList.remove('shake'), 500);
-                    } else {
-                        checkAnswer(result.status === 'correct');
-                    }
-                };
-                input.onkeyup = (e) => { if(e.key === 'Enter') processInput(); };
-                const submitBtn = document.createElement('button');
-                submitBtn.className = "bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-2xl btn-bounce text-xl shadow-lg mt-2";
-                submitBtn.innerText = "Check Answer!";
-                submitBtn.onclick = processInput;
+                const btn = document.createElement('button');
+                btn.className = "bg-gradient-to-r from-yellow-400 to-orange-500 w-full text-slate-900 font-black py-5 rounded-3xl btn-bounce text-2xl shadow-xl uppercase";
+                btn.innerText = "Cast Spell!";
+                btn.onclick = () => checkAnswer(q.check(input.value).status === 'correct');
                 actionArea.appendChild(input);
-                actionArea.appendChild(submitBtn);
+                actionArea.appendChild(btn);
                 input.focus();
             } else if (q.type === 'choice') {
-                const btnGrid = document.createElement('div');
-                btnGrid.className = "grid grid-cols-1 sm:grid-cols-2 gap-3 w-full";
+                const grid = document.createElement('div');
+                grid.className = "grid grid-cols-1 sm:grid-cols-2 gap-4 w-full";
                 q.options.forEach(opt => {
                     if (opt.text) {
                         const btn = document.createElement('button');
-                        btn.className = "bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl btn-bounce text-lg shadow-md";
+                        btn.className = "bg-slate-700 hover:bg-slate-600 text-white font-bold py-5 px-6 rounded-3xl btn-bounce text-xl border-b-4 border-slate-900";
                         btn.innerText = opt.text;
-                        btn.onclick = () => checkAnswer(opt.isCorrect);
-                        btnGrid.appendChild(btn);
+                        btn.onclick = (e) => {
+                            if (opt.isCorrect) createExplosion(e.clientX, e.clientY, '#60a5fa');
+                            checkAnswer(opt.isCorrect);
+                        }
+                        grid.appendChild(btn);
                     }
                 });
-                if(btnGrid.children.length > 0) actionArea.appendChild(btnGrid);
+                actionArea.appendChild(grid);
             }
         }
 
         function createCanvas(data) {
             const canvas = document.createElement('canvas');
-            canvas.width = 120;
-            canvas.height = 120;
+            canvas.width = 140; canvas.height = 140;
             const ctx = canvas.getContext('2d');
-            const centerX = 60, centerY = 60, radius = 50;
+            const cx = 70, cy = 70, r = 60;
 
             if (data.type === 'circle') {
-                // Fill shaded parts first
                 if (data.shaded) {
                     for (let i = 0; i < data.shaded; i++) {
                         ctx.beginPath();
-                        ctx.moveTo(centerX, centerY);
-                        ctx.arc(centerX, centerY, radius, (i / data.parts) * Math.PI * 2, ((i + 1) / data.parts) * Math.PI * 2);
-                        ctx.fillStyle = '#fbbf24';
-                        ctx.fill();
+                        ctx.moveTo(cx, cy);
+                        ctx.arc(cx, cy, r, (i / data.parts) * Math.PI * 2, ((i + 1) / data.parts) * Math.PI * 2);
+                        ctx.fillStyle = '#fbbf24'; ctx.fill();
                     }
                 }
-                // Draw lines and outline
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 2;
-                ctx.stroke();
+                ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'white'; ctx.lineWidth = 4; ctx.stroke();
                 for (let i = 0; i < data.parts; i++) {
-                    ctx.beginPath();
-                    ctx.moveTo(centerX, centerY);
-                    let angle = data.equal !== false ? (i / data.parts) * Math.PI * 2 : [0, 0.5, 2.7, 4.8][i] || (i * 1.2);
-                    ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
+                    ctx.beginPath(); ctx.moveTo(cx, cy);
+                    let angle = data.equal !== false ? (i / data.parts) * Math.PI * 2 : [0, 0.4, 2.5, 4.5][i] || (i * 1.1);
+                    ctx.lineTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
                     ctx.stroke();
                 }
             } else if (data.type === 'rect') {
-                const w = 100, h = 50, startX = 10, startY = 35;
-                const partW = w / data.parts;
+                const w = 120, h = 60, sx = 10, sy = 40;
+                const pw = w / data.parts;
                 for (let i = 0; i < data.parts; i++) {
-                    ctx.fillStyle = (i < data.shaded) ? '#fbbf24' : '#fff';
-                    ctx.fillRect(startX + (i * partW), startY, partW, h);
-                    ctx.strokeStyle = '#333';
-                    ctx.strokeRect(startX + (i * partW), startY, partW, h);
+                    ctx.fillStyle = (i < data.shaded) ? '#fbbf24' : '#334155';
+                    ctx.fillRect(sx + (i * pw), sy, pw, h);
+                    ctx.strokeStyle = 'white'; ctx.lineWidth = 3;
+                    ctx.strokeRect(sx + (i * pw), sy, pw, h);
                 }
             }
             return canvas;
         }
 
         function checkAnswer(isCorrect) {
-            window.speechSynthesis.cancel();
+            const dragon = document.getElementById('dragon-mascot');
             if (isCorrect) {
-                state.score += 10;
-                state.streak++;
-                state.questionsAnswered++;
-                showFeedback("Great job! 🐉✨", "green");
+                state.score += 10; state.streak++; state.questionsAnswered++;
+                dragon.innerText = "🤩";
+                dragon.style.transform = "scale(1.5) rotate(10deg)";
+                playTone(440, 'sine', 0.1);
+                setTimeout(() => playTone(880, 'sine', 0.2), 100);
+                showFeedback("INCREDIBLE! 💎", "green");
                 if (state.questionsAnswered % 5 === 0 && state.difficulty < 5) state.difficulty++;
             } else {
                 state.streak = 0;
-                if (state.currentQuestion) state.troubleTopics.push(state.currentQuestion.topic);
-                showFeedback("Not quite! Let's try again. 💪", "red");
+                dragon.innerText = "🤔";
+                playTone(150, 'square', 0.3);
+                showFeedback("ALMOST! TRY AGAIN 🏰", "red");
             }
             updateUI();
-            const container = document.getElementById('action-area');
-            const container2 = document.getElementById('visual-container');
-            container.style.pointerEvents = 'none';
-            container2.style.pointerEvents = 'none';
+            document.getElementById('action-area').style.pointerEvents = 'none';
             setTimeout(() => {
-                container.style.pointerEvents = 'auto';
-                container2.style.pointerEvents = 'auto';
+                dragon.innerText = "🐲";
+                dragon.style.transform = "scale(1) rotate(0deg)";
+                document.getElementById('action-area').style.pointerEvents = 'auto';
                 generateNextQuestion();
             }, 1800);
         }
@@ -509,13 +486,17 @@
             fbText.innerText = text;
             fbContent.style.borderColor = color === 'green' ? '#4ade80' : '#f87171';
             fb.classList.replace('opacity-0', 'opacity-100');
-            setTimeout(() => fb.classList.replace('opacity-100', 'opacity-0'), 1600);
+            fbContent.style.transform = "scale(1)";
+            setTimeout(() => {
+                fb.classList.replace('opacity-100', 'opacity-0');
+                fbContent.style.transform = "scale(0.5)";
+            }, 1500);
         }
 
         function updateUI() {
             document.getElementById('score').innerText = state.score;
             document.getElementById('streak').innerText = state.streak;
-            const names = ["Bakery", "Forest", "Mountain", "Cave", "Kingdom"];
+            const names = ["Dragon Bakery", "Mystic Forest", "Crystal Mountain", "Fire Cave", "Royal Palace"];
             document.getElementById('level-name').innerText = "Level " + state.difficulty + ": " + names[state.difficulty-1];
         }
 
